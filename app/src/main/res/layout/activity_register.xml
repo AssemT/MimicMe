@@ -54,10 +54,30 @@
             android:layout_marginBottom="10dp"
             android:inputType="textPassword"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Confrim password"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etConfirmPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:inputType="textPassword"/>
+
         <Button
             android:id="@+id/bRegister"
-            android:text="Login"
+            android:text="Register"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvAlreadyRegistered"
+            android:layout_width="wrap_content"
+            android:text="Already have an account? "
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content" />
 
 

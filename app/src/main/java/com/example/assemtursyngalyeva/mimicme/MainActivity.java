@@ -13,27 +13,27 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    Button bLogout;
+    Button bSignIn;
     EditText etName, etUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_speech);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        etName = (EditText) findViewById(R.id.etName);
+        etName     = (EditText) findViewById(R.id.etName);
         etUsername = (EditText) findViewById(R.id.etUsername);
-        bLogout = (Button) findViewById(R.id.bLogout);
+        bSignIn    = (Button)   findViewById(R.id.bSignIn);
 
-        bLogout.setOnClickListener(this);
+        bSignIn.setOnClickListener(this);
     }
 
     public void onClick(View v){
         switch (v.getId()) {
-            case R.id.bLogout:
-                startActivity(new Intent(this, LoginActivity.class));
+            case R.id.bSignIn:
+                startActivity(new Intent(this, Speech.class));
                 break;
         }
     }

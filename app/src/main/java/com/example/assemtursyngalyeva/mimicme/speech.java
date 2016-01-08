@@ -10,7 +10,6 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.cmu.pocketsphinx.Assets;
@@ -18,118 +17,113 @@ import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 
-public class Speech extends AppCompatActivity implements RecognitionListener {
 
-    /* Named searches allow to quickly reconfigure the decoder */
-    private static final String KWS_SEARCH = "wakeup";
-    private static final String FORECAST_SEARCH = "forecast";
-    private static final String DIGITS_SEARCH = "digits";
-    private static final String PHONE_SEARCH = "phones";
-    private static final String MENU_SEARCH = "menu";
+public class Speech extends Activity implements RecognitionListener {
 
-    /* Keyword we are looking for to activate menu */
-    private static final String KEYPHRASE = "oh mighty computer";
 
-    private SpeechRecognizer recognizer;
-    private HashMap<String, Integer> captions;
+    //  Named searches to configure the decoder
+        private static final String KWS_SEARCH = "wakeup";
+        private static final String FORECAST_SEARCH = "forecast";
+        private static final String DIGITS_SEARCH = "digits";
+        private static final String PHONE_SEARCH = "phones";
+        private static final String MENU_SEARCH = "menu";
 
-    @Override
-    public void onCreate(Bundle state) {
-        super.onCreate(state);
+    // Keyword to activate menu
+        private static final String KEYPHRASE = "computer";
 
-        // Prepare the data for UI
-        captions = new HashMap<String, Integer>();
-        captions.put(KWS_SEARCH, R.string.kws_caption);
-        captions.put(MENU_SEARCH, R.string.menu_caption);
-        captions.put(DIGITS_SEARCH, R.string.digits_caption);
-        captions.put(PHONE_SEARCH, R.string.phone_caption);
-        captions.put(FORECAST_SEARCH, R.string.forecast_caption);
-        setContentView(R.layout.main);
-        ((TextView) findViewById(R.id.caption_text))
-                .setText("Preparing the recognizer");
+        private SpeechRecognizer recognizer;
+        private HashMap<String, Integer> captions;  // stores in hashmap
 
-        // Recognizer initialization is a time-consuming and it involves IO,
-        // so we execute it in async task
+        @Override
+        public void onCreate(Bundle state) {
+            super.onCreate(state);
 
-        new AsyncTask<Void, Void, Exception>() {
-            @Override
-            protected Exception doInBackground(Void... params) {
-                try {
-                    Assets assets = new Assets(Speech.this);
-                    File assetDir = assets.syncAssets();
-                    setupRecognizer(assetDir);
-                } catch (IOException e) {
-                    return e;
+            // Prepare the data for user interface
+            captions = new HashMap<String, Integer>();
+            captions.put(KWS_SEARCH, R.string.kws_caption);
+            captions.put(MENU_SEARCH, R.string.menu_caption);
+            captions.put(DIGITS_SEARCH, R.string.digits_caption);
+            captions.put(PHONE_SEARCH, R.string.phone_caption);
+            captions.put(FORECAST_SEARCH, R.string.forecast_caption);
+
+            setContentView(R.layout.main);
+            ((TextView) findViewById(R.id.caption_text)).setText("Preparing the recognizer");
+
+            // execution in async task is for recognizer initialization
+            new AsyncTask<Void, Void, Exception>() {
+                @Override
+                protected Exception doInBackground(Void... params) {
+                    try {
+                        Assets assets = new Assets(Speech.this);
+                        File assetDir = assets.syncAssets();
+                        setupRecognizer(assetDir);
+                    } catch (IOException e) {
+                        return e;
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Exception result) {
-                if (result != null) {
-                    ((TextView) findViewById(R.id.caption_text))
-                            .setText("Failed to init recognizer " + result);
-                } else {
-                    switchSearch(KWS_SEARCH);
+                @Override
+                protected void onPostExecute(Exception result) {
+                    if (result != null) {
+                        ((TextView) findViewById(R.id.caption_text)).setText("Failed to init recognizer " + result);
+                    } else {
+                        switchSearch(KWS_SEARCH);
+                    }
                 }
-            }
-        }.execute();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        recognizer.cancel();
-        recognizer.shutdown();
-    }
-
-    /**
-     * In partial result we get quick updates about current hypothesis. In
-     * keyword spotting mode we can react here, in other modes we need to wait
-     * for final result in onResult.
-     */
-    @Override
-    public void onPartialResult(Hypothesis hypothesis) {
-        if (hypothesis == null)
-            return;
-
-        String text = hypothesis.getHypstr();
-        if (text.equals(KEYPHRASE))
-            switchSearch(MENU_SEARCH);
-        else if (text.equals(DIGITS_SEARCH))
-            switchSearch(DIGITS_SEARCH);
-        else if (text.equals(PHONE_SEARCH))
-            switchSearch(PHONE_SEARCH);
-        else if (text.equals(FORECAST_SEARCH))
-            switchSearch(FORECAST_SEARCH);
-        else
-            ((TextView) findViewById(R.id.result_text)).setText(text);
-    }
-
-    /**
-     * This callback is called when we stop the recognizer.
-     */
-    @Override
-    public void onResult(Hypothesis hypothesis) {
-        ((TextView) findViewById(R.id.result_text)).setText("");
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            }.execute();
         }
-    }
 
-    @Override
-    public void onBeginningOfSpeech() {
-    }
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            recognizer.cancel();
+            recognizer.shutdown();
+        }
 
-    /**
-     * We stop recognizer here to get a final result
-     */
-    @Override
-    public void onEndOfSpeech() {
-        if (!recognizer.getSearchName().equals(KWS_SEARCH))
-            switchSearch(KWS_SEARCH);
-    }
+        /*
+          In partial result, we get updates about current hypothesis. We need to wait
+          for final result in onResult.
+        */
+        @Override
+        public void onPartialResult(Hypothesis hypothesis) {
+            if (hypothesis == null)
+                return;
+
+            String text = hypothesis.getHypstr();
+            if (text.equals(KEYPHRASE))
+                switchSearch(MENU_SEARCH);
+            else if (text.equals(DIGITS_SEARCH))
+                switchSearch(DIGITS_SEARCH);
+            else if (text.equals(PHONE_SEARCH))
+                switchSearch(PHONE_SEARCH);
+            else if (text.equals(FORECAST_SEARCH))
+                switchSearch(FORECAST_SEARCH);
+            else
+                ((TextView) findViewById(R.id.result_text)).setText(text);
+        }
+
+
+        // callback to stop the recognizer.
+        @Override
+        public void onResult(Hypothesis hypothesis) {
+            ((TextView) findViewById(R.id.result_text)).setText("");
+            if (hypothesis != null) {
+                String text = hypothesis.getHypstr();
+                makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+        }
+
+        //stop recognizer here to get a final result
+        @Override
+        public void onEndOfSpeech() {
+            if (!recognizer.getSearchName().equals(KWS_SEARCH))
+                switchSearch(KWS_SEARCH);
+        }
 
     private void switchSearch(String searchName) {
         recognizer.stop();
@@ -148,25 +142,16 @@ public class Speech extends AppCompatActivity implements RecognitionListener {
         // The recognizer can be configured to perform multiple searches
         // of different kind and switch between them
 
-        recognizer = defaultSetup()
-                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
-
-                        // To disable logging of raw audio comment out this call (takes a lot of space on the device)
-                .setRawLogDir(assetsDir)
-
-                        // Threshold to tune for keyphrase to balance between false alarms and misses
-                .setKeywordThreshold(1e-45f)
-
-                        // Use context-independent phonetic search, context-dependent is too slow for mobile
-                .setBoolean("-allphone_ci", true)
-
-                .getRecognizer();
+        recognizer =  defaultSetup().setAcousticModel(new File(assetsDir, "en-us-ptm"))
+                                    .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+                        // to disable logging of raw audio comment out this call (takes a lot of space on the device)
+                                    .setRawLogDir(assetsDir)
+                        // threshold to tune for keyphrase to balance between false alarms and misses
+                                    .setKeywordThreshold(1e-45f)
+                        // utilize context-independent phonetic search, context-dependent is too slow for mobile
+                                    .setBoolean("-allphone_ci", true)
+                                    .getRecognizer();
         recognizer.addListener(this);
-
-        /** In your application you might not need to add all those searches.
-         * They are added here for demonstration. You can leave just one.
-         */
 
         // Create keyword-activation search.
         recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
