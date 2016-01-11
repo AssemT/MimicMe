@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MimicMe.iml" filepath="$PROJECT_DIR$/MimicMe.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/files/files.iml" filepath="$PROJECT_DIR$/files/files.iml" />
+      <module fileurl="file://$PROJECT_DIR$/recognizer/recognizer.iml" filepath="$PROJECT_DIR$/recognizer/recognizer.iml" />
     </modules>
   </component>
 </project>
