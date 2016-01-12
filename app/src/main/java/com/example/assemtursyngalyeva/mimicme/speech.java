@@ -156,11 +156,11 @@ public class Speech extends Activity implements RecognitionListener {
         // Create keyword-activation search.
         recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
 
-        // Create gramm-based search for selection between demos
+        // Create gramm.jsgf-based search for selection between demos
         File menuGrammar = new File(assetsDir, "menu.gram");
         recognizer.addGrammarSearch(MENU_SEARCH, menuGrammar);
 
-        // Create gramm-based search for digit recognition
+        // Create gramm.jsgf-based search for digit recognition
         File digitsGrammar = new File(assetsDir, "digits.gram");
         recognizer.addGrammarSearch(DIGITS_SEARCH, digitsGrammar);
 
