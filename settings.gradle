@@ -1,1 +1,1 @@
-include ':app', ':recognizer'
+include ':app'
