@@ -2,4 +2,6 @@
 
 grammar menu;
 
-public <item> = digits | forecast | phones;
+<greeting> = (ok|okay|okey)(app|myapp);
+<expression> = (bad|bat|bet|bit|but|hair|here|her|rest|sat|seat|set|sit|sing|sink|think|that|them|then|these|they|this|thin|thing|those|three|tree|vest|vet|wet|wrest|wrist);
+public <query> = <greeting> <expression>;
